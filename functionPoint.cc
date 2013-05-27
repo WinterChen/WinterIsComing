@@ -1,20 +1,26 @@
 /*
-这是一个关于函数指针做成员变量的使用示例
+this is a example for using function point as class member
+
+compile in linux: g++ -o functionPoint functionPoint.cc
 */
 
-#include <stddef.h>
+#include <stddef.h> //head file of NULL
 #include <iostream>
 using namespace std;
-typedef    unsigned int (*hashFunction)(const void *key);
-typedef    void *(*keyDup)(void *privdata, const void *key);
-typedef    void *(*valDup)(void *privdata, const void *obj);
-typedef    int (*keyCompare)(void *privdata, const void *key1, const void *key2);
-typedef    void (*keyDestructor)(void *privdata, void *key);
-typedef    void (*valDestructor)(void *privdata, void *obj);
+
+//function point
+typedef    unsigned int (*HashFunction)(const void *key);
+typedef    void *(*KeyDup)(void *privdata, const void *key);
+typedef    void *(*ValDup)(void *privdata, const void *obj);
+typedef    int (*KeyCompare)(void *privdata, const void *key1, const void *key2);
+typedef    void (*KeyDestructor)(void *privdata, void *key);
+typedef    void (*ValDestructor)(void *privdata, void *obj);
+
+
 
 class HashType {
 public:
-    HashType(hashFunction f1, keyDup f2, valDup f3, keyCompare f4, keyDestructor f5, valDestructor f6){
+    HashType(HashFunction f1, KeyDup f2, ValDup f3, KeyCompare f4, KeyDestructor f5, ValDestructor f6){
         mHashFunction = f1;
         mKeyDup = f2;
         mValDup = f3;
@@ -22,12 +28,12 @@ public:
         mKeyDestructor = f5;
         mValDestructor = f6;
     }
-    hashFunction mHashFunction;
-    keyDup mKeyDup;
-    valDup mValDup;
-    keyCompare mKeyCompare;
-    keyDestructor mKeyDestructor;
-    valDestructor mValDestructor;
+    HashFunction mHashFunction;
+    KeyDup mKeyDup;
+    ValDup mValDup;
+    KeyCompare mKeyCompare;
+    KeyDestructor mKeyDestructor;
+    ValDestructor mValDestructor;
 } ;
 
 unsigned int f1(const void *key){
