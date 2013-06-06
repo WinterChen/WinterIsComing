@@ -1,0 +1,125 @@
+/*
+this file is the hash algorithm writed by winter
+so called it winterHashTable
+
+
+*/
+
+#ifndef 	WINTERHASH_H
+#define WINTERHASH_H
+
+#include <stddef.h> //head file of NULL
+#include <iostream>
+using namespace std;
+
+#define  TABLE_INITIAL_SIZE  4;
+
+
+
+typedef enum
+{
+       HASH_UNKNOWN = -5,
+       INSERT_ERR = -4,
+       HASH_ERR = -3,
+	REHASH_ERR = -2,
+	HASH_EXISTS = -1,
+       HASH_NO = 0,
+	HASH_OK,
+	
+	
+}ReturnType;
+
+
+class HashEntry{
+public:
+	HashEntry(void *key, void *value):mKey(key), mValue(value){};
+	~HashEntry(){}
+	void *mKey;
+	void *mValue;
+	HashEntry *mNext;
+	
+};
+
+//def  function point
+typedef    unsigned long (*HashFunction)(const void *key);
+typedef    void *(*KeyDup)(void *privdata, const void *key);
+typedef    void *(*ValDup)(void *privdata, const void *obj);
+typedef    int (*KeyCompare)(void *privdata, const void *key1, const void *key2);
+typedef    void (*KeyDestructor)(void *privdata, void *key);
+typedef    void (*ValDestructor)(void *privdata, void *obj);
+
+//define the function class
+class HashType {
+public:
+    HashType(HashFunction f1, KeyDup f2, ValDup f3, KeyCompare f4, KeyDestructor f5, ValDestructor f6){
+        mHashFunction = f1;
+        mKeyDup = f2;
+        mValDup = f3;
+        mKeyCompare = f4;
+        mKeyDestructor = f5;
+        mValDestructor = f6;
+    }
+    HashFunction mHashFunction;
+    KeyDup mKeyDup;
+    ValDup mValDup;
+    KeyCompare mKeyCompare;
+    KeyDestructor mKeyDestructor;
+    ValDestructor mValDestructor;
+} ;
+
+
+class Table{
+public:
+	Table() : mTable(NULL), mSize(0), mUsedSize(0), mSizeMask(0){}
+	~Table(){}
+	HashEntry **mTable;
+	unsigned long mSize;
+	unsigned long mUsedSize;
+	unsigned long mSizeMask;
+	//unsigned long mRehashIndex;
+
+};
+
+
+class WinterHashTable{
+public:
+	WinterHashTable(HashType *type, void *privateData) : mIsReHashing(0), mRehashIndex(-1){
+               mType = type;
+	        mPrivateData = privateData;
+	}
+	~WinterHashTable(){}
+	void TableInit();
+	int Insert(void *key, void *value);
+	template <class T1, class T2>
+	int Insert(T1 key, T2 value);
+	int InsertToTable(void *key, void *value, int tableIndex);
+	unsigned long GetIndex(void *key, unsigned long sizeMask);
+	bool Delete(void *key);
+	bool Update(void *key, void *value);
+	bool IsEmpty();
+	bool IsRehashing();
+	int ReHash();
+	bool KeyCompareF(const void *key1, const void *key2);
+       unsigned long	ReSize(unsigned long size);
+	int ReHashStep(int step = 1);
+	bool NeedReHash();
+	int ReSize();
+	int Expand();
+	template <class T3>
+	HashEntry *Find(T3 key);
+	HashEntry *Find(void *key);
+	
+private:
+	HashType *mType;
+	Table mHashTable[2];
+	bool mIsReHashing;
+	int mRehashIndex;
+	int mPrimaryTable;
+	void *mPrivateData;
+	unsigned long mSize;
+	
+
+};
+
+
+#endif
